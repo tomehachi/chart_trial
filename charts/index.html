@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>統計テスト</title>
+
+        <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+        <link rel="stylesheet" href="assets/nvd3/nv.d3.min.css" >
+
+        <style>
+            #chart {
+                height: 300px;
+                width: 100%;
+            }
+            #chart text {
+                font: 12px 'メイリオ';
+            }
+        </style>
+
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+            <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h1>ケアトレ 統計情報</h2>
+                </div>
+                <div id="chart" class="col-sm-12">
+                    <h2>会員数推移</h2>
+                    <svg class="total-chart"></svg>
+                </div>
+                <div id="debug">
+                </div>
+            </div>
+        </div>
+
+        <script src="assets/js/jquery-2.1.4.min.js"></script>
+        <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+        <script src="assets/d3/d3.min.js"></script>
+        <script src="assets/nvd3/nv.d3.min.js"></script>
+        <script src="assets/nvd3/stream_layers.js"></script>
+        <script>
+        nv.addGraph(function() {
+            var chart = nv.models.lineWithFocusChart();
+
+            chart.xAxis.tickFormat(function(d) {
+                return d3.time.format('%Y-%m-%d %H:%M')(new Date(d));
+            });
+            chart.x2Axis.tickFormat(function(d) {
+                return d3.time.format('%Y-%m-%d %H:%M')(new Date(d));
+            });
+
+            chart.yAxis.tickFormat(d3.format(',.2f'));
+
+            chart.y2Axis.tickFormat(d3.format(',.2f'));
+            chart.useInteractiveGuideline(true);
+
+            d3.select('#chart svg')
+                .datum([
+                    {"key":"会員数","values":[
+                        {"x":1443625200000,"y":0.11027490087823788},
+                        {"x":1443628800000,"y":0.18787064468553172},
+                        {"x":1443632400000,"y":0.1580991559019247},
+                        {"x":1443636000000,"y":0.12821700989901205},
+                        {"x":1453639600000,"y":0.16043087944962472},
+                    ]},
+                ])
+                .transition().duration(500)
+                .call(chart);
+
+            nv.utils.windowResize(chart.update);
+
+            return chart;
+        });
+
+        function printDebug() {
+            $("#debug").text(JSON.stringify(testData(), null, ""));
+        }
+
+        function testData() {
+            return stream_layers(3, 20, .1).map(function(data, i) {
+                return {
+                    key: 'Stream' + i,
+                    values: data
+                };
+            });
+        }
+        </script>
+    </body>
+</html>
